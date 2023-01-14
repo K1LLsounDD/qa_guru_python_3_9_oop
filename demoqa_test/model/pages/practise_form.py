@@ -6,84 +6,46 @@ from demoqa_test.model.control import checkboxs, datapiecker, dropdown, radio_bu
 from demoqa_test.utils import upload
 
 
-
 class PractiseFormPage:
-    def __init__(self, user: User):
-        self.user = user
+    def __init__(self):
+        pass
 
-    def fill_name(self):
-        browser.element('#firstName').type(self.user.first_name)
-        browser.element('#lastName').type(self.user.last_name)
-        return self
-
-    def fill_email(self):
-        browser.element('#userEmail').type(self.user.email)
-        return self
-
-    def select_gender(self):
-        radio_button.gender('[name=gender]', self.user.gender)
-        return self
-
-    def fill_phone_number(self):
-        browser.element('#userNumber').type(self.user.number)
-        return
-
-    def click_databirthday(self):
+    def fill_registration_fields(self, user: User):
+        browser.element('#firstName').type(user.first_name)
+        browser.element('#lastName').type(user.last_name)
+        browser.element('#userEmail').type(user.email)
+        radio_button.gender('[name=gender]', user.gender)
+        browser.element('#userNumber').type(user.number)
         browser.element('#dateOfBirthInput').click()
-
-    def select_month(self):
         browser.element('.react-datepicker__month-select').click()
-        datapiecker.data_birthday('.react-datepicker__month-select', self.user.date_month)
-        return self
-
-    def select_year(self):
+        datapiecker.birthday('.react-datepicker__month-select', user.date_month)
         browser.element('.react-datepicker__year-select').click()
-        datapiecker.data_birthday('.react-datepicker__year-select', self.user.date_year)
-
-    def select_day(self):
-        browser.element(f'.react-datepicker__day--0{self.user.date_day}').click()
-        return self
-
-    def type_subject(self):
-        browser.element('#subjectsInput').type(self.user.subjects).press_enter()
-        return self
-
-    def select_hobby(self):
-        checkboxs.hobby('[for^="hobbies-checkbox"]', self.user.hobby)
-        return self
-
-    def upload_picture(self):
-        upload.path_picture('#uploadPicture', self.user.picture)
-        return self
-
-    def select_state(self):
-        dropdown.select('#state', self.user.state)
-        return self
-
-    def select_city(self):
-        dropdown.select('#city', self.user.city)
-        return self
-
-    def type_address(self):
-        browser.element('#currentAddress').type(self.user.address)
+        datapiecker.birthday('.react-datepicker__year-select', user.date_year)
+        browser.element(f'.react-datepicker__day--0{user.date_day}').click()
+        browser.element('#subjectsInput').type(user.subjects).press_enter()
+        checkboxs.hobby('[for^="hobbies-checkbox"]', user.hobby)
+        upload.path_picture('#uploadPicture', user.picture)
+        browser.element('#currentAddress').type(user.address)
+        dropdown.select('#state', user.state)
+        dropdown.select('#city', user.city)
         return self
 
     def submit(self):
         browser.element('#submit').click()
         return self
 
-    def check_results(self):
+    def check_results(self, user: User):
         browser.all('.table-responsive td:nth-child(2)').should(have.texts(
-            f'{self.user.first_name} {self.user.last_name}',
-            self.user.email,
-            self.user.gender,
-            self.user.number,
-            f'{self.user.date_day} {self.user.date_month} {self.user.date_year}',
-            self.user.subjects,
-            self.user.hobby,
-            self.user.picture,
-            self.user.address,
-            f'{self.user.state} {self.user.city}'
+            f'{user.first_name} {user.last_name}',
+            user.email,
+            user.gender,
+            user.number,
+            f'{user.date_day} {user.date_month},{user.date_year}',
+            user.subjects,
+            user.hobby,
+            user.picture.split('/')[-1],
+            user.address,
+            f'{user.state} {user.city}'
         ))
 
     def open_registration_form(self):
