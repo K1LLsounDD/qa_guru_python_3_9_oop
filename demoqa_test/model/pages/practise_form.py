@@ -2,7 +2,10 @@ from selene.support.conditions import have
 from selene.support.shared import browser
 from demoqa_test.model.data.user import User
 
-from demoqa_test.model.control import checkboxs, datapiecker, dropdown, radio_button
+from demoqa_test.model.control.checkboxs import Checkbox
+from demoqa_test.model.control.dropdown import Dropdown
+from demoqa_test.model.control.radio_button import RadioButton
+from demoqa_test.model.control.datapiecker import DatePiecker
 from demoqa_test.utils import upload
 
 
@@ -11,23 +14,30 @@ class PractiseFormPage:
         pass
 
     def fill_registration_fields(self, user: User):
+        checkbox = Checkbox(browser.all('[for^="hobbies-checkbox"]'))
+        dropdown_state = Dropdown('#state')
+        dropdown_city = Dropdown('#city')
+        button = RadioButton('[name=gender]')
+        datepiecker_month = DatePiecker('.react-datepicker__month-select')
+        datepiecker_year = DatePiecker('.react-datepicker__year-select')
+
         browser.element('#firstName').type(user.first_name)
         browser.element('#lastName').type(user.last_name)
         browser.element('#userEmail').type(user.email)
-        radio_button.gender('[name=gender]', user.gender)
+        button.gender(user.gender)
         browser.element('#userNumber').type(user.number)
         browser.element('#dateOfBirthInput').click()
         browser.element('.react-datepicker__month-select').click()
-        datapiecker.birthday('.react-datepicker__month-select', user.date_month)
+        datepiecker_month.birthday(user.date_month)
         browser.element('.react-datepicker__year-select').click()
-        datapiecker.birthday('.react-datepicker__year-select', user.date_year)
+        datepiecker_year.birthday(user.date_year)
         browser.element(f'.react-datepicker__day--0{user.date_day}').click()
         browser.element('#subjectsInput').type(user.subjects).press_enter()
-        checkboxs.hobby('[for^="hobbies-checkbox"]', user.hobby)
+        checkbox.hobby(user.hobby)
         upload.path_picture('#uploadPicture', user.picture)
         browser.element('#currentAddress').type(user.address)
-        dropdown.select('#state', user.state)
-        dropdown.select('#city', user.city)
+        dropdown_state.select(user.state)
+        dropdown_city.select(user.city)
         return self
 
     def submit(self):
@@ -47,6 +57,7 @@ class PractiseFormPage:
             user.address,
             f'{user.state} {user.city}'
         ))
+        return self
 
     def open_registration_form(self):
         browser.open('/automation-practice-form')
